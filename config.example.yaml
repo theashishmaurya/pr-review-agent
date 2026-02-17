@@ -1,0 +1,70 @@
+# PR Review Agent Configuration
+
+# VCS Configuration
+vcs:
+  github:
+    token: ""  # Or set GITHUB_TOKEN env var
+  # azure:
+  #   organization: "my-org"
+  #   project: "my-project"
+  #   token: ""  # Or set AZURE_DEVOPS_TOKEN env var
+
+# Ticket Integrations (Phase 3)
+tickets: []
+  # - type: jira
+  #   patterns: ["PROJ-"]
+  #   adapter:
+  #     url: "https://mycompany.atlassian.net"
+  #     token: ""  # Or set JIRA_TOKEN env var
+  # - type: linear
+  #   patterns: ["ENG-"]
+  #   adapter:
+  #     apiKey: ""  # Or set LINEAR_API_KEY env var
+
+# LLM Configuration
+llm:
+  # Provider: ollama, claude, or openai
+  provider: ollama
+  
+  # Model (provider-specific):
+  # - ollama: qwen3.5:cloud, codellama:70b, deepseek-coder:33b
+  # - claude: claude-sonnet-4-20250514, claude-opus-4-20250514
+  # - openai: gpt-4o, gpt-4-turbo, gpt-3.5-turbo
+  model: qwen3.5:cloud
+  
+  # Base URL (optional)
+  # ollama: "http://localhost:11434" (default)
+  # openai: "https://api.openai.com/v1" (default) or your Azure OpenAI endpoint
+  baseUrl: "http://localhost:11434"
+  
+  # API Key (for claude/openai) - better to use env vars:
+  # - ANTHROPIC_API_KEY for Claude
+  # - OPENAI_API_KEY for OpenAI
+  apiKey: ""
+
+# Review Settings
+review:
+  # Maximum diff size in characters (to avoid token limits)
+  maxDiffSize: 50000
+  
+  # Focus areas (optional, can also be set via skills)
+  focusAreas: []
+  
+  # Paths to ignore in reviews
+  ignorePaths:
+    - node_modules
+    - dist
+    - build
+    - .git
+    - vendor
+    - "*.lock"
+    - "*.min.js"
+    - "*.min.css"
+
+# Skills Configuration
+skills:
+  # Path to skills directory
+  path: ~/.pr-review/skills
+  
+  # Default skill to apply
+  default: default
