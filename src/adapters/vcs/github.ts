@@ -209,8 +209,12 @@ export class GitHubAdapter implements VCSAdapter {
       error: '🚨'
     };
 
-    // Get the PR to find the head commit
-    const pr = await this.getPR(prId);
+    // Get the PR to find the head commit SHA
+    const { data: pr } = await this.octokit.pulls.get({
+      owner: this.owner,
+      repo: this.repo,
+      pull_number: Number(prId)
+    });
 
     await this.octokit.pulls.createReviewComment({
       owner: this.owner,
@@ -219,12 +223,19 @@ export class GitHubAdapter implements VCSAdapter {
       path,
       line,
       body: `${severityEmoji[severity]} ${body}`,
-      commit_id: pr.sourceBranch
+      commit_id: pr.head.sha
     });
   }
 
   async submitReview(prId: string | number, review: Review): Promise<void> {
-    // First create review comments
+    // Get the head commit SHA for inline comments
+    const { data: pr } = await this.octokit.pulls.get({
+      owner: this.owner,
+      repo: this.repo,
+      pull_number: Number(prId)
+    });
+
+    // Format comments for GitHub API (needs commit_id for line positioning)
     const comments = review.comments.map(c => ({
       path: c.path,
       line: c.line,
@@ -243,7 +254,8 @@ export class GitHubAdapter implements VCSAdapter {
       pull_number: Number(prId),
       event: eventMap[review.verdict],
       body: review.summary,
-      comments
+      comments,
+      commit_id: pr.head.sha
     });
   }
 
